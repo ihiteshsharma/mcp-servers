@@ -1,34 +1,36 @@
-FROM node:22.12-alpine AS builder
+FROM node:18-alpine
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package.json and package-lock.json
 COPY package*.json ./
-COPY tsconfig.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy source code
+# Copy source files
 COPY . .
 
-# Build TypeScript
+# Build TypeScript files
 RUN npm run build
 
-FROM node:22-alpine AS release
+# Remove devDependencies to reduce image size
+RUN npm prune --production
 
-WORKDIR /app
-
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/package.json /app/package.json
-COPY --from=builder /app/package-lock.json /app/package-lock.json
-
+# Set environment variables
 ENV NODE_ENV=production
 
-RUN npm ci --ignore-scripts --omit=dev
+# Expose MCP Server
+ENTRYPOINT ["node", "./dist/server.js"]
 
-ENV SERPER_API_KEY="your-api-key-here"
-ENV FIRECRAWL_API_KEY="your-firecrawl-api-key-here"
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/healthcheck || exit 1
 
-ENTRYPOINT ["node", "dist/index.js"]
+# Documentation
+LABEL org.opencontainers.image.title="Figma MCP Server"
+LABEL org.opencontainers.image.description="MCP server for creating and manipulating Figma designs"
+LABEL org.opencontainers.image.source="https://github.com/your-org/figma-mcp-server"
+LABEL org.opencontainers.image.version="0.1.0"
+LABEL org.opencontainers.image.licenses="MIT"

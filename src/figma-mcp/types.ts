@@ -1,12 +1,4 @@
 /**
- * Common Types for Figma MCP Server
- * 
- * This file contains type definitions used across the MCP server implementation
- */
-
-import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-
-/**
  * Result type for MCP tools
  */
 export interface ToolResult {

@@ -1,235 +1,202 @@
-# Serper MCP Server
+# Figma MCP Server
 
-An MCP server implementation that integrates with the Serper API, providing comprehensive web, news, image, and video search capabilities through Google search results. Additionally, it includes web scraping functionality using FireCrawl to extract content from search results, and location-based services.
+A Model Context Protocol (MCP) server implementation that integrates with Figma, enabling LLMs to create and manipulate designs through a structured API. This server allows AI assistants to create wireframes, add UI elements, style components, arrange layouts, and export designs—all through Figma's native capabilities.
 
 ## Features
 
-- **Web Search**: General queries, knowledge graphs, people also ask, and more
-- **News Search**: Articles, press releases, and timely content with source information
-- **Image Search**: Photos, diagrams, logos, and other visual content
-- **Video Search**: Videos from YouTube and other platforms
-- **Maps Search**: Places, businesses, and points of interest with detailed information
-- **Reviews Search**: Detailed user reviews and ratings for businesses and places
-- **Web Scraping**: Extract and format content from any web page found in search results
-- **Location Services**: Get current GPS coordinates for location-aware searches
-- **Location-Based Results**: Country and location-specific search capability
-- **Rich Result Formatting**: Structured data from knowledge graphs and answer boxes
+- **Wireframe Creation**: Generate website layouts based on descriptions
+- **Element Creation**: Add UI components like buttons, inputs, text, and containers
+- **Element Styling**: Apply colors, typography, and effects to elements
+- **Layout Arrangement**: Organize elements with auto-layout, grids, and positioning
+- **Design Refinement**: Improve existing designs based on feedback
+- **Design Export**: Export designs as PNG, JPG, SVG, or PDF
+- **Resource Management**: Access design templates, components, and design systems
+- **User Requirements**: Store and retrieve design specifications
 
 ## Tools
 
-- **serper_web_search**
-  - Execute web searches with location context
+- **create-wireframe**
+  - Generate initial wireframe based on description
   - Inputs:
-    - `query` (string): Search terms
-    - `location` (string, optional): Location context (e.g., "United States", "India")
-    - `gl` (string, optional): Google country code (e.g., "us", "in", "uk")
-    - `num` (number, optional): Number of results (max 20)
+    - `description` (string): Description of the website or app to create
+    - `pages` (array, optional): List of pages to include in the wireframe
+    - `style` (string, optional): Design style to apply (e.g., 'minimal', 'corporate', 'creative')
+    - `designSystemId` (string, optional): ID of a design system to use
 
-- **serper_news_search**
-  - Search for news articles and press releases
+- **add-element**
+  - Add a UI element to an existing design
   - Inputs:
-    - `query` (string): News search terms
-    - `location` (string, optional): Location context 
-    - `gl` (string, optional): Google country code
-    - `num` (number, optional): Number of results (max 20)
+    - `elementType` (enum): Type of element to add (button, input, text, image, container, navbar, card, footer)
+    - `parent` (string): ID of the parent element/frame to add this element to
+    - `properties` (object): Element properties like text content, size, etc.
 
-- **serper_image_search**
-  - Search for images, photos, diagrams, and visual content
+- **style-element**
+  - Apply styling to an element
   - Inputs:
-    - `query` (string): Image search terms
-    - `gl` (string, optional): Google country code (e.g., "us", "in", "uk")
-    - `num` (number, optional): Number of results (max 20)
+    - `elementId` (string): ID of the element to style
+    - `styles` (object): Styles to apply (colors, typography, etc.)
 
-- **serper_video_search**
-  - Search for videos from YouTube and other platforms
+- **modify-element**
+  - Change properties of an existing element
   - Inputs:
-    - `query` (string): Video search terms
-    - `gl` (string, optional): Google country code (e.g., "us", "in", "uk")
-    - `num` (number, optional): Number of results (max 20)
+    - `elementId` (string): ID of the element to modify
+    - `modifications` (object): Changes to apply to the element
 
-- **serper_maps_search**
-  - Search for places, businesses, and points of interest
+- **arrange-layout**
+  - Organize elements within a container
   - Inputs:
-    - `query` (string): Place or business search terms
-    - `ll` (string, optional): Location coordinates in format '@latitude,longitude,zoom' (e.g. '@40.6973709,-74.1444871,11z')
-    - `useCurrentLocation` (boolean, optional): Whether to use current IP-based location if no coordinates provided (default: true)
-    - `num` (number, optional): Number of results (max 20)
-  - Returns:
-    - Business names and addresses
-    - Geographic coordinates
-    - Ratings and reviews
-    - Business types and categories
-    - Contact information when available
+    - `parentId` (string): ID of the parent container
+    - `layout` (enum): Layout type to apply (flex, grid, auto)
+    - `properties` (object, optional): Layout properties
 
-- **serper_reviews_search**
-  - Retrieve detailed reviews for a specific place or business
+- **export-design**
+  - Export design as image or PDF
   - Inputs:
-    - `placeId` (string): Google Place ID (required, obtain from maps search)
-    - `cid` (string, optional): Google Customer ID (from maps search)
-    - `fid` (string, optional): Google Featured ID (from maps search)
-    - `sortBy` (string, optional): How to sort reviews ("mostRelevant", "newest", "highestRating", "lowestRating")
-    - `num` (number, optional): Number of reviews to return (max 20)
-  - Returns:
-    - Detailed review text
-    - Rating and date information
-    - Reviewer profiles and statistics
-    - Likes and user engagement data
+    - `format` (enum): Export format (png, jpg, svg, pdf)
+    - `scale` (number): Export scale factor
+    - `selection` (array, optional): Specific element IDs to export, or empty for entire design
 
-- **gps_coordinates**
-  - Get the current location coordinates
+- **save-requirements**
+  - Save user requirements for a design
   - Inputs:
-    - `fallbackToIP` (boolean, optional): Whether to use IP-based geolocation if precise GPS is unavailable (default: true)
-  - Returns:
-    - Latitude and longitude
-    - Accuracy information
-    - Links to view the location on map services
+    - `requirements` (string): User requirements for the design
+    - `target` (string, optional): Target audience
+    - `purpose` (string, optional): Purpose of the design
+    - `keyFeatures` (array, optional): Key features to include
 
-- **firecrawl_scrape**
-  - Scrape and extract content from any web page
-  - Inputs:
-    - `url` (string): The URL of the page to scrape
-    - `formats` (array, optional): Output formats (default ["markdown"])
+## Prompts
+
+The server includes specialized prompts to guide LLMs:
+
+- **wireframe-creation**: Guide for creating initial wireframes
+- **design-refinement**: Guide for improving designs based on feedback
+- **component-creation**: Guide for creating reusable UI components
+
+## Installation
+
+### Prerequisites
+
+1. Node.js 18+ and npm
+2. Figma Desktop app
+3. Figma developer account (for plugin installation)
+
+### Server Installation
+
+```bash
+# Via npm
+npm install -g @modelcontextprotocol/server-figma
+
+# Or clone and build
+git clone https://github.com/your-repo/figma-mcp-server.git
+cd figma-mcp-server
+npm install
+npm run build
+```
+
+### Figma Plugin Installation
+
+1. **Create a new plugin in Figma**
+   - In Figma, go to `Plugins > Development > New Plugin`
+   - Choose `Empty Plugin` template
+   - Enter a name and ID for your plugin (e.g., "MCP Server Plugin")
+
+2. **Copy plugin files**
+   - Copy the files from the `figma-plugin` directory to your Figma plugin directory
+   - Update the `manifest.json` with your plugin ID
+
+3. **Install plugin in Figma**
+   - In Figma, go to `Plugins > Development > Import plugin from manifest...`
+   - Select the `manifest.json` file from your plugin directory
 
 ## Configuration
 
-### Getting API Keys
-1. For Serper: Sign up for a [Serper.dev account](https://serper.dev)
-2. For FireCrawl: Sign up for a [FireCrawl account](https://firecrawl.dev)
-3. Generate your API keys from your account dashboards
+### For Claude Desktop
 
-### Usage with Claude Desktop
 Add this to your `claude_desktop_config.json`:
 
-### Docker
-
 ```json
 {
   "mcpServers": {
-    "serper": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "SERPER_API_KEY",
-        "-e",
-        "FIRECRAWL_API_KEY",
-        "mcp/hs-search"
-      ],
-      "env": {
-        "SERPER_API_KEY": "YOUR_SERPER_API_KEY_HERE",
-        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY_HERE"
-      }
-    }
-  }
-}
-```
-
-### NPX
-
-```json
-{
-  "mcpServers": {
-    "serper": {
+    "figma": {
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-serper"
-      ],
-      "env": {
-        "SERPER_API_KEY": "YOUR_SERPER_API_KEY_HERE",
-        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY_HERE"
-      }
+        "@modelcontextprotocol/server-figma"
+      ]
     }
   }
 }
 ```
 
-## Build and Run
+### For other Claude apps
 
-### Docker Build:
-
-```bash
-docker build -t mcp/hs-search:latest .
-```
-
-### Docker Run:
+Use Docker to run the server:
 
 ```bash
-docker run -i --rm \
-  -e SERPER_API_KEY="your-serper-api-key-here" \
-  -e FIRECRAWL_API_KEY="your-firecrawl-api-key-here" \
-  mcp/hs-search
+docker run -i --rm modelcontextprotocol/server-figma
 ```
 
-### Local Development:
+## Testing with MCP Inspector
 
-```bash
-# Install dependencies
-npm install
+The MCP Inspector is a tool that helps you test and debug MCP servers.
 
-# Build TypeScript
-npm run build
-
-# Run server
-SERPER_API_KEY="your-serper-api-key-here" FIRECRAWL_API_KEY="your-firecrawl-api-key-here" npm start
-```
-
-## Example Usage
-
-Here are some examples of how to use the tools in Claude:
-
-1. **Web search:**
-   ```
-   Can you search for "climate change solutions" and summarize the results?
+1. **Install the MCP Inspector**
+   ```bash
+   npm install -g @modelcontextprotocol/inspector
    ```
 
-2. **News search:**
-   ```
-   Find me the latest news about "artificial intelligence" in the United States.
-   ```
-
-3. **Image search:**
-   ```
-   Can you find images of "Mars rover Perseverance" and describe what you see?
+2. **Run the Inspector with the Figma MCP Server**
+   ```bash
+   modelcontextprotocol-inspector --server "npx -y @modelcontextprotocol/server-figma"
    ```
 
-4. **Video search:**
+3. **Test tools and resources**
+   - Use the Inspector UI to test each tool
+   - View request and response payloads
+   - Debug errors and unexpected behaviors
+
+## Example Usage with Claude
+
+Here are some examples of how to use the Figma MCP server with Claude:
+
+1. **Create a wireframe**
    ```
-   Search for videos about "how to make sourdough bread" and summarize the top results.
+   Please create a wireframe for an e-commerce website that sells handmade jewelry. It should have a clean, minimal design with a focus on product photography.
    ```
 
-5. **Maps search:**
+2. **Add elements to a wireframe**
    ```
-   Search for "coffee shops" near me and tell me which ones have the highest ratings.
-   ```
-
-6. **Reviews search:**
-   ```
-   Search for "Apple Store" and then get all the reviews for the highest-rated location.
+   Please add a navigation bar to the wireframe with links to Home, Shop, About, and Contact pages. Also add a hero section with a large product image and a call-to-action button.
    ```
 
-7. **Location+Maps integration:**
+3. **Style elements**
    ```
-   What's my current location? Now find Italian restaurants within 2 miles of me.
-   ```
-
-8. **Maps+Reviews integration:**
-   ```
-   Find the top-rated "pizza places" near me and show me their most recent reviews.
+   Please style the navigation bar with a white background and black text. Make the CTA button have a gold background with white text.
    ```
 
-9. **Get location:**
+4. **Arrange layout**
    ```
-   What is my current location? Can you show the coordinates on a map?
+   Please arrange the product cards in a 3-column grid layout with 24px spacing between items.
    ```
 
-10. **Web scraping:**
-    ```
-    Search for documentation on TypeScript interfaces, then scrape and explain the content from one of the result pages.
-    ```
+5. **Export the design**
+   ```
+   Please export the entire design as a PNG file at 2x resolution.
+   ```
+
+## Developing Your Own Tools and Resources
+
+To extend the server with custom tools and resources:
+
+1. Create a new file in the appropriate directory (`tools/` or `resources/`)
+2. Implement the tool or resource following the existing patterns
+3. Register it in `server.ts`
+4. Update the plugin code to handle any new commands
 
 ## License
 
 This MCP server is licensed under the MIT License. You are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
