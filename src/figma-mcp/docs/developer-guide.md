@@ -16,7 +16,7 @@ Before you begin, ensure you have the following tools installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/figma-mcp-server.git
+   git clone https://github.com/ihiteshsharma/figma-mcp-server.git
    cd figma-mcp-server
    ```
 

@@ -4,8 +4,8 @@
   "description": "MCP server for Figma design creation and manipulation",
   "license": "MIT",
   "author": "Your Name",
-  "homepage": "https://github.com/your-username/figma-mcp-server",
-  "bugs": "https://github.com/your-username/figma-mcp-server/issues",
+  "homepage": "https://github.com/ihiteshsharma/figma-mcp-server",
+  "bugs": "https://github.com/ihiteshsharma/figma-mcp-server/issues",
   "type": "module",
   "main": "dist/server.js",
   "files": [

@@ -6,7 +6,7 @@ This guide explains how to effectively use the Figma MCP Server with Claude to c
 
 1. **Clone and build the Figma MCP Server**
    ```bash
-   git clone https://github.com/your-username/figma-mcp-server.git
+   git clone https://github.com/ihiteshsharma/figma-mcp-server.git
    cd figma-mcp-server
    npm install
    npm run build

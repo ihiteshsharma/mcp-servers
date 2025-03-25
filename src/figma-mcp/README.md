@@ -84,7 +84,7 @@ The server includes specialized prompts to guide LLMs:
 
 ```bash
 # Clone this repository
-git clone https://github.com/your-username/figma-mcp-server.git
+git clone https://github.com/ihiteshsharma/figma-mcp-server.git
 cd figma-mcp-server
 
 # Install dependencies
