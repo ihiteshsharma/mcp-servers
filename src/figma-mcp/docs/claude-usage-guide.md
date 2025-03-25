@@ -2,11 +2,33 @@
 
 This guide explains how to effectively use the Figma MCP Server with Claude to create and manipulate designs.
 
-## Setup
+## Local Setup
 
-1. **Install the Figma MCP Server** following the instructions in the main README
-2. **Configure Claude Desktop** to use the server
-3. **Install the Figma plugin** to enable communication with Figma
+1. **Clone and build the Figma MCP Server**
+   ```bash
+   git clone https://github.com/your-username/figma-mcp-server.git
+   cd figma-mcp-server
+   npm install
+   npm run build
+   ```
+
+2. **Configure Claude Desktop** 
+   Add to your `claude_desktop_config.json`:
+   ```json
+   {
+     "mcpServers": {
+       "figma": {
+         "command": "node",
+         "args": [
+           "/absolute/path/to/your/figma-mcp-server/dist/server.js"
+         ],
+         "cwd": "/absolute/path/to/your/figma-mcp-server"
+       }
+     }
+   }
+   ```
+   
+3. **Set up the Figma plugin** following the instructions in the main README
 
 ## Basic Workflow
 
@@ -17,6 +39,19 @@ The general workflow when using Claude with the Figma MCP Server is:
 3. Claude will **add and style elements** to build the design
 4. You can provide **feedback for refinement**
 5. When satisfied, you can **export the design**
+
+## Checking MCP Server Connectivity
+
+Before starting, make sure Claude can connect to your local MCP server:
+
+1. Start Claude Desktop
+2. Ask Claude: "Can you check if the Figma MCP server is available?"
+3. Claude should respond confirming the connection
+
+If there are connection issues:
+- Make sure the server is built (`npm run build`)
+- Check your `claude_desktop_config.json` paths are correct
+- Try restarting Claude Desktop
 
 ## Effective Prompting
 
@@ -138,44 +173,30 @@ The changes have been applied to element-456 and its child elements. Would you l
 
 ---
 
-## Advanced Techniques
-
-### 1. Working with Design Systems
-
-You can use existing design systems:
-
-```
-Please create a wireframe using the "Corporate" design system (system-123).
-Apply the typography, color scheme, and spacing from this design system consistently.
-```
-
-### 2. Creating Responsive Designs
-
-Specify responsive behavior:
-
-```
-Please make this design responsive with these breakpoints:
-- Mobile (320px-767px): Single column layout with stacked elements
-- Tablet (768px-1023px): Two-column layout for features
-- Desktop (1024px+): Current layout with three columns for features
-```
-
-### 3. Exporting Specific Components
-
-Export specific parts of your design:
-
-```
-Please export just the header navigation component as a PNG at 2x resolution.
-```
-
 ## Troubleshooting
 
 If you encounter issues:
 
-1. **Element creation fails**: Check if the parent element ID is correct
-2. **Styling doesn't apply**: Verify the element type supports the requested styles
-3. **Figma plugin not responding**: Ensure the plugin is installed and running
-4. **MCP server connection issues**: Restart Claude and check server logs
+1. **Server connection problems**:
+   - Check that the server is running (`npm start` in the project directory)
+   - Verify your Claude Desktop configuration paths
+   - Restart Claude Desktop to pick up configuration changes
+
+2. **Element creation fails**: 
+   - Check if the parent element ID is correct
+   - Look for error messages in the server console output
+
+3. **Styling doesn't apply**: 
+   - Verify the element type supports the requested styles
+   - Check the element ID is correct
+
+4. **Figma plugin not responding**: 
+   - Ensure the plugin is installed and running
+   - Check the Figma console for errors (Plugins > Development > Console)
+
+5. **MCP server logs**: 
+   - Run the server in a terminal to see debug messages
+   - Use the MCP Inspector to test tools independently
 
 ## Further Resources
 

@@ -72,7 +72,7 @@ The server includes specialized prompts to guide LLMs:
 - **design-refinement**: Guide for improving designs based on feedback
 - **component-creation**: Guide for creating reusable UI components
 
-## Installation
+## Local Setup & Installation
 
 ### Prerequisites
 
@@ -83,34 +83,47 @@ The server includes specialized prompts to guide LLMs:
 ### Server Installation
 
 ```bash
-# Via npm
-npm install -g @modelcontextprotocol/server-figma
-
-# Or clone and build
-git clone https://github.com/your-repo/figma-mcp-server.git
+# Clone this repository
+git clone https://github.com/your-username/figma-mcp-server.git
 cd figma-mcp-server
+
+# Install dependencies
 npm install
+
+# Build the TypeScript code
 npm run build
+
+# Start the server locally
+npm start
 ```
 
-### Figma Plugin Installation
+### Figma Plugin Setup
 
 1. **Create a new plugin in Figma**
    - In Figma, go to `Plugins > Development > New Plugin`
    - Choose `Empty Plugin` template
    - Enter a name and ID for your plugin (e.g., "MCP Server Plugin")
 
-2. **Copy plugin files**
-   - Copy the files from the `figma-plugin` directory to your Figma plugin directory
-   - Update the `manifest.json` with your plugin ID
+2. **Set up the plugin files**
+   - Copy the contents of `figma-plugin/manifest.json`, `figma-plugin/code.ts`, and `figma-plugin/ui.html` to your new plugin directory
+   - Update the `manifest.json` with your plugin ID (the one Figma generated for you)
 
-3. **Install plugin in Figma**
+3. **Build the plugin**
+   - In your plugin directory, run:
+   ```bash
+   # If you have the Figma CLI installed
+   npx @figma/plugin-build
+   ```
+
+4. **Load the plugin in Figma**
    - In Figma, go to `Plugins > Development > Import plugin from manifest...`
    - Select the `manifest.json` file from your plugin directory
 
-## Configuration
+## Testing with Claude Desktop
 
-### For Claude Desktop
+Since this is not published to npm, you'll need to run the server locally and point Claude Desktop to it.
+
+### Configure Claude Desktop
 
 Add this to your `claude_desktop_config.json`:
 
@@ -118,42 +131,55 @@ Add this to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "figma": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-figma"
-      ]
+        "/path/to/your/figma-mcp-server/dist/server.js"
+      ],
+      "cwd": "/path/to/your/figma-mcp-server"
     }
   }
 }
 ```
 
-### For other Claude apps
-
-Use Docker to run the server:
-
-```bash
-docker run -i --rm modelcontextprotocol/server-figma
-```
+Replace `/path/to/your/figma-mcp-server` with the actual path where you cloned the repository.
 
 ## Testing with MCP Inspector
 
-The MCP Inspector is a tool that helps you test and debug MCP servers.
+The MCP Inspector is a tool that helps you test and debug MCP servers locally.
 
 1. **Install the MCP Inspector**
    ```bash
    npm install -g @modelcontextprotocol/inspector
    ```
 
-2. **Run the Inspector with the Figma MCP Server**
+2. **Run the Inspector with your local Figma MCP Server**
    ```bash
-   modelcontextprotocol-inspector --server "npx -y @modelcontextprotocol/server-figma"
+   # Navigate to your project directory
+   cd path/to/figma-mcp-server
+   
+   # Run the inspector pointing to your local server
+   modelcontextprotocol-inspector --server "node ./dist/server.js"
    ```
 
 3. **Test tools and resources**
    - Use the Inspector UI to test each tool
    - View request and response payloads
    - Debug errors and unexpected behaviors
+
+## Running Tests
+
+This project includes a comprehensive test suite:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Or use the provided script
+./scripts/run-tests.sh
+```
 
 ## Example Usage with Claude
 
@@ -184,7 +210,25 @@ Here are some examples of how to use the Figma MCP server with Claude:
    Please export the entire design as a PNG file at 2x resolution.
    ```
 
-## Developing Your Own Tools and Resources
+## Project Structure
+
+```
+figma-mcp-server/
+├── src/
+│   ├── tools/              # Tool implementations
+│   ├── resources/          # Resource implementations
+│   ├── prompts/            # Prompt templates
+│   ├── figma-plugin/       # Figma plugin files
+│   ├── __tests__/          # Test files
+│   ├── elementCreator.ts   # Element creation utilities
+│   ├── plugin-bridge.ts    # Communication with Figma plugin
+│   └── server.ts           # Main MCP server implementation
+├── docs/                   # Documentation
+├── scripts/                # Utility scripts
+└── package.json           # Project configuration
+```
+
+## Modifying and Extending
 
 To extend the server with custom tools and resources:
 
