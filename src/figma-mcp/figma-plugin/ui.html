@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figma MCP Server Plugin</title>
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    
+    h1 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .message {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: #F5F5F5;
+      border-left: 4px solid #2D9CDB;
+    }
+    
+    .message.error {
+      border-left-color: #EB5757;
+      background-color: #FEEFEF;
+    }
+    
+    .message.success {
+      border-left-color: #6FCF97;
+      background-color: #EFFFEF;
+    }
+    
+    .message-header {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    
+    .message-content {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    button {
+      background-color: #2D9CDB;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    button:hover {
+      background-color: #2A8FC7;
+    }
+  </style>
+</head>
+<body>
+  <h1>Figma MCP Server Plugin</h1>
+  
+  <div id="messages">
+    <!-- Messages will be added here -->
+  </div>
+  
+  <script>
+    // Communication bridge to plugin code
+    const pluginMessages = document.getElementById('messages');
+    
+    // Handle messages from the server
+    window.onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      
+      // Handle the message coming from MCP server via the plugin code
+      if (message) {
+        // Add the message to the UI
+        addMessage(message.type, message.success ? 'success' : 'error', 
+          message.data ? JSON.stringify(message.data) : message.error || 'No data');
+        
+        // Send the message back to the plugin code
+        // The plugin code will then send it to the MCP server
+        parent.postMessage({ pluginMessage: message }, '*');
+      }
+    };
+    
+    // Add a message to the UI
+    function addMessage(type, status, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${status}`;
+      
+      const header = document.createElement('div');
+      header.className = 'message-header';
+      header.textContent = type;
+      
+      const messageContent = document.createElement('div');
+      messageContent.className = 'message-content';
+      messageContent.textContent = content;
+      
+      messageDiv.appendChild(header);
+      messageDiv.appendChild(messageContent);
+      
+      pluginMessages.appendChild(messageDiv);
+      
+      // Limit number of messages to keep UI clean
+      if (pluginMessages.childNodes.length > 10) {
+        pluginMessages.removeChild(pluginMessages.firstChild);
+      }
+    }
+  </script>
+</body>
+</html> 
